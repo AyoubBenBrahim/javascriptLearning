@@ -77,3 +77,15 @@ ctx.moveTo(w/1.5 + 80, h/2 + 150);
 ctx.lineTo(w/1.5 + 130, h/2 + 200);
 ctx.stroke();
 ctx.closePath();
+
+//************* */
+
+var rgradient=ctx.createRadialGradient(300,300,0,300,300,300);//            
+    rgradient.addColorStop("0","magenta"); // Adds a color stop to a gradient. A color stop is a position in the gradient where a color 
+                                           // change occurs. The offset must be between 0 and 1.
+    rgradient.addColorStop(".25","blue");
+    rgradient.addColorStop(".50","green");
+    rgradient.addColorStop(".75","yellow");
+    rgradient.addColorStop("1.0","red");                
+    ctx.fillStyle=rgradient;
+    ctx.fillRect(0,0,400,400);
