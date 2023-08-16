@@ -30,6 +30,7 @@ console.log(s);
 /*
 ******************************************************************
 */
+
 console.log();
 arr = ["red", "blue", 122, 3.14, true, [1, 2, 3], function () {console.log("hello from Array");}];
 console.log(arr);
@@ -39,6 +40,7 @@ arr[6](); // call the function
 /*
 ******************************************************************
 */
+
 console.log();
 
 arr = ["black", "beard"];
