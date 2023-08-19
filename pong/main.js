@@ -58,7 +58,7 @@ class Ball {
   }
 
   reset = () => {
-    this.x = w / 2;
+    this.x = w / 2; 
     this.y = h / 2;
     this.xVelocity = 5;
     this.yVelocity = 3;
@@ -86,9 +86,7 @@ class Ball {
     
 
     this.x += this.xVelocity;
-    // this.paddleLeft.setPaddleY(this.y --);
-    // this.paddleRight.setPaddleY(this.y --);
-    // this.y += this.yVelocity;
+    this.y += this.yVelocity;
 
     this.draw();
   }
@@ -175,12 +173,8 @@ class Paddle {
   }
 
   getHorizontalCollisionOffset = () => this.position === "left" ? this.paddleX + this.paddleWidth : this.paddleX;
-  getVerticalCollisionOffset = () => theCanvas.height - (this.paddleY + this.paddleHeight);
   
 }
-
-// var paddle_Left = new Paddle(10, 150, 15, 10, "tomato", "left");
-// var paddleRight = new Paddle(20, 150, 15, 10, "tomato", "right");
 
 var pdlInitHeight = 150;
 var pdlInitWidth = 20;
@@ -188,7 +182,6 @@ var pdlinitX = 20;
 var pdlInitY = (theCanvas.height - pdlInitHeight) / 2;
 
 var pdlRinitX = theCanvas.width - pdlinitX - pdlInitWidth;
-// var pdlRinitY = (theCanvas.height - pdlInitHeight) / 2;
 
 var paddle_Left = new Paddle(pdlinitX, pdlInitY, 20, pdlInitHeight, 15, "tomato", "left"); // x, y ,width, height, radius, color, position
 var paddleRight = new Paddle(pdlRinitX , pdlInitY, 20, pdlInitHeight, 15,"tomato", "right");
@@ -210,15 +203,22 @@ function animate() {
   paddle_Left.drawPaddle();
   paddleRight.drawPaddle();
   ball.update();
+
 }
+
+movePaddle = (e) => {
+  // console.log(e);
+  if (e.key === "ArrowUp") 
+    paddleRight.setPaddleY((paddleRight.paddleY - 30 < 0) ? 0 : (paddleRight.paddleY - 30));
+    else if (e.key === "ArrowDown")
+    paddleRight.setPaddleY((paddleRight.paddleY + 30 > theCanvas.height - paddleRight.paddleHeight) ? theCanvas.height - paddleRight.paddleHeight : (paddleRight.paddleY + 30));
+    else if (e.key === "w")
+    paddle_Left.setPaddleY((paddle_Left.paddleY - 30 < 0) ? 0 : (paddle_Left.paddleY - 30));
+    else if (e.key === "s")
+    paddle_Left.setPaddleY((paddle_Left.paddleY + 30 > theCanvas.height - paddle_Left.paddleHeight) ? theCanvas.height - paddle_Left.paddleHeight : (paddle_Left.paddleY + 30));
+};
+
+window.addEventListener("keydown", movePaddle);
 
 animate();
 
-// paddle_Left.drawPaddle();
-
-// ctx.beginPath();
-// ctx.moveTo(pdlinitX, pdlInitY + pdlInitHeight);
-// ctx.lineTo(0, paddle_Left.paddleY + paddle_Left.paddleHeight);
-// ctx.lineTo(paddle_Left.paddleY + paddle_Left.paddleHeight, h);
-// ctx.stroke();
-// console.log("theCanvas.height - (paddle_Left.paddleY + paddle_Left.paddleHeight): ", theCanvas.height - (paddle_Left.paddleY + paddle_Left.paddleHeight));
