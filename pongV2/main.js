@@ -49,58 +49,74 @@ class Ball {
   reset() {
     this.x = w / 2;
     this.y = Math.random() * (h - 2 * this.radius) + this.radius;
-    this.xVelocity = 5; 
-    this.yVelocity = 7;
+    this.xVelocity = Math.random() < 0.5 ? -5 : 5; 
+    this.yVelocity = 5;
     this.color = randomColor();
   }
 
   update() {
     if (
       (this.x + this.radius >= this.paddleRight.detectHorizontalCollision() &&
-        this.paddleRight.isInRangeY(this.y, this.radius)) ||
+        this.paddleRight.isBallInRangeY(this.y, this.radius)) ||
       (this.x - this.radius <= this.paddleLeft.detectHorizontalCollision() &&
-        this.paddleLeft.isInRangeY(this.y, this.radius))
+        this.paddleLeft.isBallInRangeY(this.y, this.radius))
     ) {
-      // Calculate the angle based on the paddle position
       let angle = 0;
       if (this.x < w / 2) {
-        // Ball collided with the left paddle
-        const randomY = this.paddleLeft.paddleY + Math.random() * this.paddleLeft.paddleHeight; // Random Y coordinate within the paddle's height range
-        const relativeY = this.y - randomY; // Distance from the random Y coordinate
-        // const relativeY = this.y - this.paddleLeft.paddleHeight; // Distance from the random Y coordinate
-        angle = ((relativeY / this.paddleLeft.paddleHeight) * Math.PI) / 3 - Math.PI / 6;
+  
+        // const relativeY = this.y - this.paddleLeft.paddleHeight / 2;
+        // angle = ((relativeY / this.paddleLeft.paddleHeight) * Math.PI) / 3 - Math.PI / 6;
+
+        const paddleCenterY = this.paddleLeft.paddleY + this.paddleLeft.paddleHeight / 2;
+        const relativeY = this.y - paddleCenterY;
+        const normalizedY = relativeY / (this.paddleLeft.paddleHeight / 2);
+        let maxAngle = Math.PI / 4; // 45 degrees
+        angle = normalizedY * maxAngle;//  -  Math.PI / 6;
+        // we do - PI/6 because the angle is calculated from the left side of the canvas.
+
+        // this.xVelocity = 5 * Math.cos(angle); // Convert the angle to x and y velocities
+        // this.yVelocity = 5 * Math.sin(angle);
+        
       } else {
         // Ball collided with the right paddle
-        const relativeY = this.y - this.paddleRight.paddleY;
-        angle =
-          (relativeY / this.paddleRight.paddleHeight) * (Math.PI / 3) +
-          (5 * Math.PI) / 6;
-      }
+        const paddleCenterY = this.paddleRight.paddleY + this.paddleRight.paddleHeight / 2;
+        const relativeY = this.y - paddleCenterY; 
+        const normalizedY = relativeY / (this.paddleRight.paddleHeight / 2);
+        let maxAngle = Math.PI / 4;
+        angle = normalizedY * maxAngle// + 5 * Math.PI / 6;
+         // because the paddle is on the right side of the canvas we need to add 5/6 of PI to the angle because the angle is calculated from the left side of the canvas
+        //  this.xVelocity = 5 * Math.cos(angle) * -1; // Convert the angle to x and y velocities
+        //  this.yVelocity = 5 * Math.sin(angle);
+        }
 
-      // Update the ball's velocity based on the angle
-      const speed = Math.sqrt(this.xVelocity ** 2 + this.yVelocity ** 2);
-      this.xVelocity = speed * Math.cos(angle); // Convert the angle to x and y velocities
+
+      let speed = Math.sqrt(this.xVelocity ** 2 + this.yVelocity ** 2);
+      this.xVelocity = (this.x < w/2) ? speed * Math.cos(angle) : -speed * Math.cos(angle);
+      this.yVelocity = speed * Math.sin(angle);
+
+      
+
       this.color = randomColor();
     }
-    if (this.y + this.radius > h || this.y - this.radius < 0) {
+    if (this.y + this.radius >= h || this.y - this.radius <= 0) {
       // Top and bottom walls
       this.yVelocity = -this.yVelocity;
-      this.color = randomColor();
+      // this.color = randomColor();
     }
     if (this.x + this.radius > w || this.x - this.radius < 0) {
       this.reset();
-      // return;
     }
     if (
       this.paddleLeft.detectVerticalCollision(this) ||
       this.paddleRight.detectVerticalCollision(this)
     ) {
-      console.log("vertical collision");
+      // console.log("vertical collision");
       this.reset();
     }
 
     this.x += this.xVelocity;
     this.y += this.yVelocity;
+
 
     this.draw();
   }
@@ -175,26 +191,40 @@ class Paddle {
   detectHorizontalCollision = () =>
     this.side === "left" ? this.paddleX + this.paddleWidth : this.paddleX;
 
+  // detectVerticalCollision(ball) {
+  //   if (this.side === "left") {
+  //     return (
+  //       ball.x < this.paddleX + this.paddleWidth &&
+  //       ball.x > this.paddleX &&
+  //       ball.y > this.paddleY &&
+  //       ball.y < this.paddleY + this.paddleHeight
+  //     );
+  //   } else if (this.side == "right") {
+  //     return (
+  //       ball.x + ball.radius > this.paddleX &&
+  //       ball.x < this.paddleX + this.paddleWidth &&
+  //       ball.y > this.paddleY &&
+  //       ball.y < this.paddleY + this.paddleHeight
+  //     );
+  //   }
+  //   return false;
+  // }
+
   detectVerticalCollision(ball) {
     if (this.side === "left") {
       return (
-        ball.x < this.paddleX + this.paddleWidth &&
-        ball.x > this.paddleX &&
-        ball.y > this.paddleY &&
-        ball.y < this.paddleY + this.paddleHeight
+         ball.x  < this.paddleX + this.paddleWidth
+         
       );
-    } else if (this.side == "right") {
+    } else if (this.side === "right") {
       return (
-        ball.x > this.paddleX &&
-        ball.x < this.paddleX + this.paddleWidth &&
-        ball.y > this.paddleY &&
-        ball.y < this.paddleY + this.paddleHeight
+        ball.x  > this.paddleX
+        
       );
     }
-    return false;
   }
 
-  isInRangeY(ballY, ballRadius) {
+  isBallInRangeY(ballY, ballRadius) {
     return (
       ballY + ballRadius > this.paddleY &&
       ballY - ballRadius < this.paddleY + this.paddleHeight
@@ -222,9 +252,6 @@ class Paddle {
 
 setPaddleVelocity = (speed) => this.paddleVelocity = speed;
 }
-
-// let paddleLeft = new Paddle(0, h / 2 - 60, 20, 120, 10, "tomato", "left");
-// let paddleRight = new Paddle(w - 20, h / 2 - 60, 20, 120, 10, "tomato", "right");
 
 var pdlInitHeight = 150;
 var pdlInitWidth = 20;
@@ -254,7 +281,7 @@ var paddleRight = new Paddle(
   "right"
 );
 
-let ball = new Ball(w / 2, h / 2, 10, 5, 5, "red", paddleLeft, paddleRight);
+let ball = new Ball(w / 2, h / 2, 10, 5, 8, "red", paddleLeft, paddleRight);
 
 function draw() {
   ctx.clearRect(0, 0, w, h);
