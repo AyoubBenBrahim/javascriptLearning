@@ -27,32 +27,32 @@ const randomColor = () => {
 };
 
 function paddleBallCollision(paddles, ball) {
-  let pdlLeft = paddles[0];
-  let pdlRight = paddles[1];
-  let angle = 0;
-  if (ball.ballX < w / 2) {
-    // Ball collided with the left paddle
-    const paddleCenterY = pdlLeft.paddleY + pdlLeft.paddleHeight / 2;
-    const relativeY = ball.ballY - paddleCenterY;
-    const normalizedY = relativeY / (pdlLeft.paddleHeight / 2);
-    let maxAngle = Math.PI / 4;
-    angle = normalizedY * maxAngle;
-  } else {
-    // Ball collided with the right paddle
-    const paddleCenterY = pdlRight.paddleY + pdlRight.paddleHeight / 2;
-    const relativeY = ball.ballY - paddleCenterY;
-    const normalizedY = relativeY / (pdlRight.paddleHeight / 2);
-    let maxAngle = Math.PI / 4;
-    angle = normalizedY * maxAngle;
+  {
+    let pdlLeft = paddles[0];
+    let pdlRight = paddles[1];
+    let angle = 0;
+    if (ball.ballX < w / 2) {
+      const paddleCenterY = pdlLeft.paddleY + pdlLeft.paddleHeight / 2;
+      const relativeY = ball.ballY - paddleCenterY;
+      const normalizedY = relativeY / (pdlLeft.paddleHeight / 2);
+      let maxAngle = Math.PI / 4;
+      angle = normalizedY * maxAngle;
+    } else {
+      // Ball collided with the right paddle
+      const paddleCenterY = pdlRight.paddleY + pdlRight.paddleHeight / 2;
+      const relativeY = ball.ballY - paddleCenterY;
+      const normalizedY = relativeY / (pdlRight.paddleHeight / 2);
+      let maxAngle = Math.PI / 4;
+      angle = normalizedY * maxAngle;
+    }
+
+    let speed = Math.sqrt(ball.xVelocity ** 2 + ball.yVelocity ** 2);
+    ball.xVelocity =
+      ball.ballX < w / 2 ? speed * Math.cos(angle) : -speed * Math.cos(angle);
+    ball.yVelocity = speed * Math.sin(angle);
+
+    ball.color = randomColor();
   }
-
-  let speed = Math.sqrt(ball.xVelocity ** 2 + ball.yVelocity ** 2);
-
-  ball.xVelocity =
-    ball.ballX < w / 2 ? speed * Math.cos(angle) : -speed * Math.cos(angle);
-  ball.yVelocity = speed * Math.sin(angle);
-
-  ball.color = randomColor();
 }
 
 detectHorizontalCollision = (ball, paddles) =>
@@ -124,29 +124,10 @@ class Ball {
     // Top and bottom walls
     if (this.ballY + this.radius > h || this.ballY - this.radius < 0) {
       this.yVelocity = -this.yVelocity;
-      // if (this.ballX < w / 2 + 30 ) 
-      //   {
-          
-      //     console.log("hit center");
-      //   let angle = Math.PI/6 * Math.random()
-      //   // this.xVelocity = this.ballY < h / 2 ? Math.cos(angle) : -Math.cos(angle);
-      //   this.xVelocity = this.ballX < w / 2 ?  Math.cos(angle) : - Math.cos(angle);
-      //   this.yVelocity = Math.sin(angle);
-
-      // }
     }
     // Left and right walls
     if (this.ballX + this.radius > w || this.ballX - this.radius < 0) {
       (this.ballX + this.radius > w) ? leftPaddle.setScore() : rightPaddle.setScore();
-
-
-    //   if (this.ballX <= w ) 
-    //   {
-    //     console.log("hit center");
-    //   let angle = Math.PI/4
-    //   this.xVelocity = -Math.cos(angle) 
-    // }
-
       resetGame(this);
     }
     if (detectVerticalCollision(this, this.paddles)) {
