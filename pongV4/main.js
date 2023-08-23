@@ -47,16 +47,16 @@ function paddleBallCollision(paddles, ball) {
   }
 
   // let ballVelocity = Math.sqrt(ball.xVelocity ** 2 + ball.yVelocity ** 2);
-  ballVelocity = 7;
+  ballVelocity = 10;
 
   ball.xVelocity =
     ball.ballX < canvasWidth / 2 ? ballVelocity * Math.cos(angle) : -ballVelocity * Math.cos(angle);
   ball.yVelocity = ballVelocity * Math.sin(angle);
 
 
-  // const adjustedPaddleVelocity = ballVelocity * 10;
-  // pdlLeft.setPaddleVelocity(adjustedPaddleVelocity);
-  // pdlRight.setPaddleVelocity(adjustedPaddleVelocity);
+  const adjustedPaddleVelocity = ballVelocity * 8;
+  pdlLeft.setPaddleVelocity(adjustedPaddleVelocity);
+  pdlRight.setPaddleVelocity(adjustedPaddleVelocity);
 
 
 
@@ -104,8 +104,8 @@ const randomY = Math.random() * (maxY - minY) + minY;
 
   ball.ballX = canvasWidth / 2;
   ball.ballY = randomY;
-  ball.xVelocity = Math.random() < 0.5 ? -2 : 2;
-  ball.yVelocity = 2;
+  ball.xVelocity = Math.random() < 0.5 ? -3 : 3;
+  ball.yVelocity = 3;
   ball.color = randomColor();
 }
 
@@ -146,28 +146,9 @@ class Ball {
     if (detectVerticalCollision(this, this.paddles)) {
       (this.ballX + this.radius > canvasWidth/2) ? leftPaddle.updateScore() : rightPaddle.updateScore();
       
-      let ballPos = (this.ballX < canvasWidth / 2);
+      shiftPaddles(this);
       resetGame(this);
-      if (ballPos)
-      {
-      //  leftPaddle.shiftPaddle();
-      // leftPaddle.paddleX+=10;
-      // rightPaddle.paddleX+=10;
-      // const initLeftX = margin - paddleWidth / 2;
-// const initRightX = canvasWidth - initLeftX - paddleWidth;
-      leftPaddle.paddleX = leftPaddle.paddleX + 10;
-      rightPaddle.paddleX = 
-        (rightPaddle.paddleX + rightPaddle.paddleWidth + 10 > canvasWidth) ? rightPaddle.paddleX : rightPaddle.paddleX + 10;
-      }
-      else
-      {
-        // rightPaddle.shiftPaddle();
-        // leftPaddle.paddleX-=10;
-        // rightPaddle.paddleX-=10;
 
-        leftPaddle.paddleX = (leftPaddle.paddleX - 10 < 0) ? leftPaddle.paddleX : leftPaddle.paddleX - 10;
-        rightPaddle.paddleX = rightPaddle.paddleX - 10;
-      }
 
     }
 
@@ -179,6 +160,96 @@ class Ball {
     this.draw();
   }
 }
+
+function shiftPaddles(ball) {
+
+  let leftPaddle = ball.paddles[0];
+  let rightPaddle = ball.paddles[1];
+
+  let ballPos = (ball.ballX < canvasWidth / 2);
+  if (leftPaddle.paddleX + leftPaddle.paddleWidth >= canvasWidth/3 || rightPaddle.paddleX <= 2*canvasWidth/3)
+  {
+    let winner = (leftPaddle.score > rightPaddle.score) ? "Left" : "Right";
+    alert("Game Over! " + winner + " player wins!");
+    // document.location.reload();
+  }
+  // if (ballPos)
+  // {
+  //   let shiftRatio = calculateShiftRatio(leftPaddle.score) * 2;
+  // leftPaddle.paddleX = leftPaddle.paddleX + shiftRatio;
+  // rightPaddle.paddleX = 
+  //   (rightPaddle.paddleX + rightPaddle.paddleWidth + shiftRatio > canvasWidth) ? rightPaddle.paddleX : rightPaddle.paddleX + shiftRatio;
+  // }
+  // else
+  // {
+  //   let shiftRatio = calculateShiftRatio(rightPaddle.score) * 2;
+  //   leftPaddle.paddleX = (leftPaddle.paddleX - shiftRatio < 0) ? leftPaddle.paddleX : leftPaddle.paddleX - shiftRatio;
+  //   rightPaddle.paddleX = rightPaddle.paddleX - shiftRatio;
+  // }
+
+
+  // if (ballPos)
+  // {
+  //   if (leftPaddle.score >= rightPaddle.score) {
+  //     leftPaddle.paddleX = (leftPaddle.paddleX - 30 < 0) ? leftPaddle.paddleX : leftPaddle.paddleX - 30;
+  //   }
+  //   else {
+  //     rightPaddle.paddleX = (rightPaddle.paddleX - rightPaddle.paddleWidth - 30 > canvasWidth * (2 / 3)) ? rightPaddle.paddleX - 30 : rightPaddle.paddleX;
+  //   }
+  // }
+  // else
+  // {
+  //   if (rightPaddle.score >= leftPaddle.score) {
+  //     rightPaddle.paddleX = 
+  //   (rightPaddle.paddleX + rightPaddle.paddleWidth + 30 > canvasWidth) ? rightPaddle.paddleX : rightPaddle.paddleX + 30;
+  //   }
+  //   else {
+  //     leftPaddle.paddleX = (leftPaddle.paddleX + 30 + leftPaddle.paddleWidth < canvasWidth  / 3) ? leftPaddle.paddleX + 30 : leftPaddle.paddleX;
+  //   }
+  // }
+
+
+  let shiftRatio = 10;
+  if (ballPos)
+  {
+    leftPaddle.paddleX = leftPaddle.paddleX + shiftRatio;
+    // rightPaddle.paddleX = 
+    // (rightPaddle.paddleX + rightPaddle.paddleWidth + shiftRatio > canvasWidth) ? rightPaddle.paddleX : rightPaddle.paddleX + shiftRatio;
+  }
+  else
+  {
+    // leftPaddle.paddleX = (leftPaddle.paddleX - shiftRatio < 0) ? leftPaddle.paddleX : leftPaddle.paddleX - shiftRatio;
+    rightPaddle.paddleX = rightPaddle.paddleX - shiftRatio;
+  }
+
+}
+
+//************* 
+function calculateShiftRatio(score) {
+  // Define the range of scores and corresponding shift ratios
+  const scoreRange = [
+    { scoreThreshold: 0, shiftRatio: 10 },   // Example: score <= 0, shift ratio = 0.2
+    { scoreThreshold: 3, shiftRatio: 15},   // Example: score <= 5, shift ratio = 0.5
+    { scoreThreshold: 6, shiftRatio: 20 },  // Example: score <= 10, shift ratio = 0.8
+    { scoreThreshold: 12, shiftRatio: 25 },  // Example: score <= 15, shift ratio = 1.0
+    { scoreThreshold: 18, shiftRatio: 30 },  // Example: score <= 20, shift ratio = 1.2
+    { scoreThreshold: 21, shiftRatio: 35 },  // Example: score <= 25, shift ratio = 1.4
+    { scoreThreshold: 24, shiftRatio: 40 },  // Example: score <= 30, shift ratio = 1.6
+  ];
+
+  // Find the corresponding shift ratio based on the score
+  let shiftRatio = 0; // Default shift ratio if no matching score range is found
+
+  for (const range of scoreRange) {
+    if (score <= range.scoreThreshold) {
+      shiftRatio = range.shiftRatio;
+      break;
+    }
+  }
+
+  return shiftRatio;
+}
+//**********************
 
 function drawPaddle(paddle) {
   ctx.fillStyle = paddle.paddleColor;
@@ -250,28 +321,7 @@ class Paddle {
   }
 
   updateScore = () => (this.score += 1);
-
-  // shiftPaddle()
-  // {
-  //   if (this.side === "left")
-  //   {
-
-  //     this.paddleX += 10;
-
-  //   }
-  //   else if (this.side === "right")
-  //   {
-     
-  //     this.paddleX -= 10;
-
-  //   }
-  // }
-
-  
-
-
-  
-  
+ 
   movePaddleUp() {
     this.paddleY =
       this.paddleY - this.paddleVelocity < 0
@@ -304,7 +354,7 @@ const paddleOptions = {
   width: paddleWidth,
   height: paddleHeight,
   radius: 15,
-  velocity: 70,
+  velocity: 50,
   color: "tomato",
 };
 
@@ -346,12 +396,16 @@ function draw() {
 }
 
 function drawDashedCenterLine() {
-  ctx.setLineDash([8, 10]); // [line length, space length]
+  ctx.setLineDash([8, 10]); // [lineLength, spaceLength]
   ctx.strokeStyle = "grey";
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(canvasWidth / 2, 0);
-  ctx.lineTo(canvasWidth / 2, canvasHeight);
+  // ctx.moveTo(canvasWidth / 2, 0);
+  // ctx.lineTo(canvasWidth / 2, canvasHeight);
+  ctx.moveTo(canvasWidth / 3, 0);
+  ctx.lineTo(canvasWidth / 3, canvasHeight);
+  ctx.moveTo((2 * canvasWidth) / 3, 0);
+  ctx.lineTo((2 * canvasWidth) / 3, canvasHeight);
   ctx.stroke();
 }
 
