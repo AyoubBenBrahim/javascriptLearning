@@ -86,9 +86,9 @@ function getRandomVelocity() {
   const ang = angle[Math.floor(Math.random() * angle.length)];
 
   const velocities = {
-    0: [-2.8, 3.4],
-    1: [-3.4, 3.4],
-    2: [-3.4, 2.8],
+    0: [-2, 3],
+    1: [-3, 3],
+    2: [-3, 2],
   };
 
   const direction = Math.random() < 0.5 ? 1 : -1;
