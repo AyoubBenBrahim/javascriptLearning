@@ -4,19 +4,6 @@ let canvasWidth = theCanvas.width;
 let canvasHeight = theCanvas.height;
 const theCircle = 2 * Math.PI;
 
-const colorArray = [
-  "red",
-  "blue",
-  "green",
-  "yellow",
-  "orange",
-  "purple",
-  "pink",
-  "black",
-  "grey",
-  "brown",
-];
-
 const randomColor = () => {
   const min = 0;
   const max = 255;
@@ -50,15 +37,14 @@ function paddleBallCollision(paddles, ball) {
   ballVelocity = 10;
 
   ball.xVelocity =
-    ball.ballX < canvasWidth / 2 ? ballVelocity * Math.cos(angle) : -ballVelocity * Math.cos(angle);
+    ball.ballX < canvasWidth / 2
+      ? ballVelocity * Math.cos(angle)
+      : -ballVelocity * Math.cos(angle);
   ball.yVelocity = ballVelocity * Math.sin(angle);
-
 
   const adjustedPaddleVelocity = ballVelocity * 8;
   pdlLeft.setPaddleVelocity(adjustedPaddleVelocity);
   pdlRight.setPaddleVelocity(adjustedPaddleVelocity);
-
-
 
   ball.color = randomColor();
 }
@@ -90,28 +76,44 @@ isBallWithinPaddleRangeY = (ball, paddles) => {
     ball.ballY + ball.radius > paddles[1].paddleY &&
     ball.ballY - ball.radius < paddles[1].paddleY + paddles[1].paddleHeight;
 
-  if (ball.ballX < canvasWidth / 2)
-    return left;
+  if (ball.ballX < canvasWidth / 2) return left;
 
   return right;
 };
 
-resetGame = (ball) => {
+function getRandomVelocity() {
+  const angle = [0, 1, 2];
+  const ang = angle[Math.floor(Math.random() * angle.length)];
 
-const minY = ball.radius + 10;
-const maxY = canvasHeight - 10;
-const randomY = Math.random() * (maxY - minY) + minY;
+  const velocities = {
+    0: [-2.8, 3.4],
+    1: [-3.4, 3.4],
+    2: [-3.4, 2.8],
+  };
+
+  const direction = Math.random() < 0.5 ? 1 : -1;
+  const [ball_vel_y, ball_vel_x] = velocities[ang].map(
+    (vel) => vel * direction
+  );
+
+  return { xV: ball_vel_x, yV: ball_vel_y };
+}
+
+resetGame = (ball) => {
+  const minY = ball.radius + 10;
+  const maxY = canvasHeight - 10;
+  const randomY = Math.random() * (maxY - minY) + minY;
 
   ball.ballX = canvasWidth / 2;
   ball.ballY = randomY;
-  ball.xVelocity = Math.random() < 0.5 ? -3 : 3;
-  ball.yVelocity = 3;
+  const { xV, yV } = getRandomVelocity();
+  ball.xVelocity = xV;
+  ball.yVelocity = yV;
   ball.color = randomColor();
-}
+};
 
 class Ball {
-  constructor({ x, y, radius, dx, dy, color, paddles })
-  {
+  constructor({ x, y, radius, dx, dy, color, paddles }) {
     this.ballX = x;
     this.ballY = y;
     this.radius = radius;
@@ -136,120 +138,53 @@ class Ball {
       paddleBallCollision(this.paddles, this);
     }
     // Top and bottom walls
-    if (this.ballY + this.radius > canvasHeight || this.ballY - this.radius < 0) {
-      if (this.ballX - this.radius >= canvasWidth / 2 - 3 && this.ballX <= canvasWidth / 2 + 3) 
-        this.ballX += (this.ballX > canvasWidth / 2) ? -5 : 7;
-      
-      this.yVelocity = -this.yVelocity;   
+    if (
+      this.ballY + this.radius > canvasHeight ||
+      this.ballY - this.radius < 0
+    ) {
+      if (
+        this.ballX - this.radius >= canvasWidth / 2 - 3 &&
+        this.ballX <= canvasWidth / 2 + 3
+      )
+        this.ballX += this.ballX > canvasWidth / 2 ? -5 : 7;
+
+      this.yVelocity = -this.yVelocity;
     }
     // Left and right boundaries
     if (detectVerticalCollision(this, this.paddles)) {
-      (this.ballX + this.radius > canvasWidth/2) ? leftPaddle.updateScore() : rightPaddle.updateScore();
-      
+      this.ballX + this.radius > canvasWidth / 2
+        ? leftPaddle.updateScore()
+        : rightPaddle.updateScore();
+
       shiftPaddles(this);
       resetGame(this);
-
-
     }
 
     this.ballX += this.xVelocity;
     this.ballY += this.yVelocity;
-
-   
 
     this.draw();
   }
 }
 
 function shiftPaddles(ball) {
-
   let leftPaddle = ball.paddles[0];
   let rightPaddle = ball.paddles[1];
 
-  let ballPos = (ball.ballX < canvasWidth / 2);
-  if (leftPaddle.paddleX + leftPaddle.paddleWidth >= canvasWidth/3 || rightPaddle.paddleX <= 2*canvasWidth/3)
-  {
-    let winner = (leftPaddle.score > rightPaddle.score) ? "Left" : "Right";
+  let ballPos = ball.ballX < canvasWidth / 2;
+  let shiftRatio = 10;
+  if (
+    leftPaddle.paddleX + leftPaddle.paddleWidth + shiftRatio >=
+      canvasWidth / 3 ||
+    rightPaddle.paddleX - shiftRatio <= (2 * canvasWidth) / 3
+  ) {
+    let winner = leftPaddle.score > rightPaddle.score ? "Left" : "Right";
     alert("Game Over! " + winner + " player wins!");
     // document.location.reload();
   }
-  // if (ballPos)
-  // {
-  //   let shiftRatio = calculateShiftRatio(leftPaddle.score) * 2;
-  // leftPaddle.paddleX = leftPaddle.paddleX + shiftRatio;
-  // rightPaddle.paddleX = 
-  //   (rightPaddle.paddleX + rightPaddle.paddleWidth + shiftRatio > canvasWidth) ? rightPaddle.paddleX : rightPaddle.paddleX + shiftRatio;
-  // }
-  // else
-  // {
-  //   let shiftRatio = calculateShiftRatio(rightPaddle.score) * 2;
-  //   leftPaddle.paddleX = (leftPaddle.paddleX - shiftRatio < 0) ? leftPaddle.paddleX : leftPaddle.paddleX - shiftRatio;
-  //   rightPaddle.paddleX = rightPaddle.paddleX - shiftRatio;
-  // }
-
-
-  // if (ballPos)
-  // {
-  //   if (leftPaddle.score >= rightPaddle.score) {
-  //     leftPaddle.paddleX = (leftPaddle.paddleX - 30 < 0) ? leftPaddle.paddleX : leftPaddle.paddleX - 30;
-  //   }
-  //   else {
-  //     rightPaddle.paddleX = (rightPaddle.paddleX - rightPaddle.paddleWidth - 30 > canvasWidth * (2 / 3)) ? rightPaddle.paddleX - 30 : rightPaddle.paddleX;
-  //   }
-  // }
-  // else
-  // {
-  //   if (rightPaddle.score >= leftPaddle.score) {
-  //     rightPaddle.paddleX = 
-  //   (rightPaddle.paddleX + rightPaddle.paddleWidth + 30 > canvasWidth) ? rightPaddle.paddleX : rightPaddle.paddleX + 30;
-  //   }
-  //   else {
-  //     leftPaddle.paddleX = (leftPaddle.paddleX + 30 + leftPaddle.paddleWidth < canvasWidth  / 3) ? leftPaddle.paddleX + 30 : leftPaddle.paddleX;
-  //   }
-  // }
-
-
-  let shiftRatio = 10;
-  if (ballPos)
-  {
-    leftPaddle.paddleX = leftPaddle.paddleX + shiftRatio;
-    // rightPaddle.paddleX = 
-    // (rightPaddle.paddleX + rightPaddle.paddleWidth + shiftRatio > canvasWidth) ? rightPaddle.paddleX : rightPaddle.paddleX + shiftRatio;
-  }
-  else
-  {
-    // leftPaddle.paddleX = (leftPaddle.paddleX - shiftRatio < 0) ? leftPaddle.paddleX : leftPaddle.paddleX - shiftRatio;
-    rightPaddle.paddleX = rightPaddle.paddleX - shiftRatio;
-  }
-
+  if (ballPos) leftPaddle.paddleX = leftPaddle.paddleX + shiftRatio;
+  else rightPaddle.paddleX = rightPaddle.paddleX - shiftRatio;
 }
-
-//************* 
-function calculateShiftRatio(score) {
-  // Define the range of scores and corresponding shift ratios
-  const scoreRange = [
-    { scoreThreshold: 0, shiftRatio: 10 },   // Example: score <= 0, shift ratio = 0.2
-    { scoreThreshold: 3, shiftRatio: 15},   // Example: score <= 5, shift ratio = 0.5
-    { scoreThreshold: 6, shiftRatio: 20 },  // Example: score <= 10, shift ratio = 0.8
-    { scoreThreshold: 12, shiftRatio: 25 },  // Example: score <= 15, shift ratio = 1.0
-    { scoreThreshold: 18, shiftRatio: 30 },  // Example: score <= 20, shift ratio = 1.2
-    { scoreThreshold: 21, shiftRatio: 35 },  // Example: score <= 25, shift ratio = 1.4
-    { scoreThreshold: 24, shiftRatio: 40 },  // Example: score <= 30, shift ratio = 1.6
-  ];
-
-  // Find the corresponding shift ratio based on the score
-  let shiftRatio = 0; // Default shift ratio if no matching score range is found
-
-  for (const range of scoreRange) {
-    if (score <= range.scoreThreshold) {
-      shiftRatio = range.shiftRatio;
-      break;
-    }
-  }
-
-  return shiftRatio;
-}
-//**********************
 
 function drawPaddle(paddle) {
   ctx.fillStyle = paddle.paddleColor;
@@ -306,8 +241,7 @@ function drawPaddle(paddle) {
 }
 
 class Paddle {
-  constructor(x, y, side, { width, height, radius, velocity, color })
-  {
+  constructor(x, y, side, { width, height, radius, velocity, color }) {
     this.paddleX = x;
     this.paddleY = y;
     this.paddleWidth = width;
@@ -316,12 +250,12 @@ class Paddle {
     this.paddleVelocity = velocity;
     this.paddleColor = color;
     this.side = side;
-    this.score = 0; 
+    this.score = 0;
     this.margin = 20;
   }
 
   updateScore = () => (this.score += 1);
- 
+
   movePaddleUp() {
     this.paddleY =
       this.paddleY - this.paddleVelocity < 0
@@ -346,10 +280,6 @@ const initLeftX = margin - paddleWidth / 2;
 const initRightX = canvasWidth - initLeftX - paddleWidth;
 const initY = (canvasHeight - paddleHeight) / 2;
 
-// const xVelocity = Math.random() < 0.5 ? -5 : 5;
-// const yVelocity = 5;
-// const ballVelocity = Math.sqrt(xVelocity ** 2 + yVelocity ** 2);
-
 const paddleOptions = {
   width: paddleWidth,
   height: paddleHeight,
@@ -360,9 +290,6 @@ const paddleOptions = {
 
 const paddleLeft = new Paddle(initLeftX, initY, "left", paddleOptions);
 const paddleRight = new Paddle(initRightX, initY, "right", paddleOptions);
-
-// const xVelocity = Math.random() < 0.5 ? -5 : 5;
-// const yVelocity = 5;
 
 const ballOptions = {
   x: canvasWidth / 2,
@@ -382,8 +309,8 @@ scoreBoard = (paddles) => {
   paddleR = paddles[1];
   ctx.font = "30px Arial";
   ctx.fillStyle = "black";
-  ctx.fillText(paddleL.score, canvasWidth/2 - 100, canvasHeight/2);
-  ctx.fillText(paddleR.score, canvasWidth/2 + 80, canvasHeight/2);
+  ctx.fillText(paddleL.score, canvasWidth / 2 - 100, canvasHeight / 2);
+  ctx.fillText(paddleR.score, canvasWidth / 2 + 80, canvasHeight / 2);
 };
 
 function draw() {
@@ -400,8 +327,12 @@ function drawDashedCenterLine() {
   ctx.strokeStyle = "grey";
   ctx.lineWidth = 4;
   ctx.beginPath();
-  // ctx.moveTo(canvasWidth / 2, 0);
-  // ctx.lineTo(canvasWidth / 2, canvasHeight);
+  ctx.moveTo(canvasWidth / 2, 0);
+  ctx.lineTo(canvasWidth / 2, canvasHeight);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "red";
   ctx.moveTo(canvasWidth / 3, 0);
   ctx.lineTo(canvasWidth / 3, canvasHeight);
   ctx.moveTo((2 * canvasWidth) / 3, 0);
