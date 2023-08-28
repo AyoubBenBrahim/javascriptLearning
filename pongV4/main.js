@@ -34,7 +34,8 @@ function paddleBallCollision(paddles, ball) {
   }
 
   // let ballVelocity = Math.sqrt(ball.xVelocity ** 2 + ball.yVelocity ** 2);
-  ballVelocity = 10;
+  // ballVelocity = 10;
+  ballVelocity = canvasWidth * 0.015; // 2.5% of canvas width
 
   ball.xVelocity =
     ball.ballX < canvasWidth / 2
@@ -53,7 +54,8 @@ detectHorizontalCollision = (ball, paddles) =>
   isBallWithinPaddleRangeX(ball, paddles) &&
   isBallWithinPaddleRangeY(ball, paddles);
 
-detectVerticalCollision = (ball, paddles) => {
+// detectVerticalCollision 
+ballOffPaddleEdges = (ball, paddles) => {
   let left = ball.ballX < paddles[0].paddleX + paddles[0].paddleWidth;
   let right = ball.ballX > paddles[1].paddleX;
 
@@ -134,6 +136,7 @@ class Ball {
   update() {
     let leftPaddle = this.paddles[0];
     let rightPaddle = this.paddles[1];
+
     if (detectHorizontalCollision(this, this.paddles)) {
       paddleBallCollision(this.paddles, this);
     }
@@ -151,7 +154,10 @@ class Ball {
       this.yVelocity = -this.yVelocity;
     }
     // Left and right boundaries
-    if (detectVerticalCollision(this, this.paddles)) {
+    // if (detectHorizontalCollision(this, this.paddles)) {
+    //   paddleBallCollision(this.paddles, this);
+    // } else if (isBallWithinPaddleRangeX(this, this.paddles)) {
+    if (ballOffPaddleEdges(this, this.paddles)) {
       this.ballX + this.radius > canvasWidth / 2
         ? leftPaddle.updateScore()
         : rightPaddle.updateScore();
@@ -165,6 +171,11 @@ class Ball {
 
     this.draw();
   }
+
+  updatePositionOnResize = (canvasWidth, canvasHeight) => {
+    this.radius = canvasWidth * 0.03;
+  }
+
 }
 
 function shiftPaddles(ball) {
@@ -189,51 +200,167 @@ function shiftPaddles(ball) {
 function drawPaddle(paddle) {
   ctx.fillStyle = paddle.paddleColor;
   ctx.beginPath();
+
+
+
+  // if (canvasWidth > canvasHeight)
+  // {
+  //   paddle.side === "left" && ctx.rect(paddle.paddleX ,paddle.paddleY, paddle.paddleWidth, paddle.paddleHeight);
+  //   paddle.side === "right" && ctx.rect(paddle.paddleX , paddle.paddleY, paddle.paddleWidth, paddle.paddleHeight);
+  // }
+  // else 
+  // {
+  //     paddle.side === "left" && ctx.rect(paddle.paddleY ,paddle.paddleX, paddle.paddleHeight,paddle.paddleWidth);
+  //     paddle.side === "right" && ctx.rect(paddle.paddleY, paddle.paddleX, paddle.paddleHeight, paddle.paddleWidth);
+  //     // paddle.side === "right" && ctx.rect(paddle.paddleY - paddle.paddleWidth  , paddle.paddleX, paddle.paddleHeight, paddle.paddleWidth);
+  // }
+
+  if (canvasWidth < canvasHeight)
+  {
+    if (paddle.side === "left") {
+      const roundedCornerRadius = paddle.paddleRadius;
+      ctx.moveTo(paddle.paddleY, paddle.paddleX + roundedCornerRadius);
+      ctx.arcTo(
+        paddle.paddleY,
+        paddle.paddleX,
+        paddle.paddleY + paddle.paddleHeight,
+        paddle.paddleX,
+        roundedCornerRadius //- 12
+      );
+      ctx.arcTo(
+        paddle.paddleY + paddle.paddleHeight,
+        paddle.paddleX,
+        paddle.paddleY + paddle.paddleHeight,
+        paddle.paddleX + paddle.paddleWidth,
+        roundedCornerRadius //-12
+      );
+      ctx.lineTo(paddle.paddleY + paddle.paddleHeight, paddle.paddleX + paddle.paddleWidth);
+      ctx.lineTo(paddle.paddleY, paddle.paddleX + paddle.paddleWidth);
+      ctx.arcTo(
+        paddle.paddleY,
+        paddle.paddleX + paddle.paddleWidth,
+        paddle.paddleY,
+        paddle.paddleX + roundedCornerRadius,
+        roundedCornerRadius
+      );
+    }
+          
+      // if (paddle.side === "right") {
+      //   ctx.moveTo(paddle.paddleY, paddle.paddleX);
+      //   ctx.arcTo(
+      //     paddle.paddleY + paddle.paddleHeight,
+      //     paddle.paddleX,
+      //     paddle.paddleY + paddle.paddleHeight,
+      //     paddle.paddleX + paddle.paddleWidth,
+      //     0
+      //   );
+      //   ctx.arcTo(
+      //     paddle.paddleY + paddle.paddleHeight,
+      //     paddle.paddleX + paddle.paddleWidth,
+      //     paddle.paddleY,
+      //     paddle.paddleX + paddle.paddleWidth,
+      //     paddle.paddleRadius
+      //   );
+      //   ctx.arcTo(
+      //     paddle.paddleY,
+      //     paddle.paddleX + paddle.paddleWidth,
+      //     paddle.paddleY,
+      //     paddle.paddleX,
+      //     paddle.paddleRadius
+      //   );
+      // }
+    
+        if (paddle.side === "right") {
+        const roundedCornerRadius = paddle.paddleRadius;
+        const flatSideWidth = paddle.paddleWidth - roundedCornerRadius;
+        ctx.moveTo(paddle.paddleY, paddle.paddleX + flatSideWidth);
+        ctx.arcTo(
+          paddle.paddleY,
+          paddle.paddleX + paddle.paddleWidth,
+          paddle.paddleY + paddle.paddleHeight,
+          paddle.paddleX + paddle.paddleWidth,
+          roundedCornerRadius //- 12
+        );
+        ctx.arcTo(
+          paddle.paddleY + paddle.paddleHeight,
+          paddle.paddleX + paddle.paddleWidth,
+          paddle.paddleY + paddle.paddleHeight,
+          paddle.paddleX,
+          roundedCornerRadius //-12
+        );
+        ctx.lineTo(paddle.paddleY + paddle.paddleHeight, paddle.paddleX);
+        ctx.lineTo(paddle.paddleY, paddle.paddleX);
+        ctx.arcTo(
+          paddle.paddleY,
+          paddle.paddleX,
+          paddle.paddleY,
+          paddle.paddleX + flatSideWidth,
+          roundedCornerRadius
+        );
+      }
+
+      ctx.closePath();
+  ctx.fill();
+      return;
+  }
+   console.log("canvasWidth > canvasHeight")
+  /*
+  ***** Left Right Paddle *****
+  */
+
   if (paddle.side === "left") {
-    ctx.moveTo(paddle.paddleX + paddle.paddleWidth, paddle.paddleY);
+    const roundedCornerRadius = paddle.paddleRadius;  
+    ctx.moveTo(paddle.paddleX + roundedCornerRadius, paddle.paddleY);
     ctx.arcTo(
-      paddle.paddleX + paddle.paddleWidth,
-      paddle.paddleY + paddle.paddleHeight,
+      paddle.paddleX,
+      paddle.paddleY,
       paddle.paddleX,
       paddle.paddleY + paddle.paddleHeight,
-      0
+      roundedCornerRadius //- 12
     );
     ctx.arcTo(
       paddle.paddleX,
       paddle.paddleY + paddle.paddleHeight,
-      paddle.paddleX,
-      paddle.paddleY,
-      paddle.paddleRadius
-    );
-    ctx.arcTo(
-      paddle.paddleX,
-      paddle.paddleY,
-      paddle.paddleX + paddle.paddleWidth,
-      paddle.paddleY,
-      paddle.paddleRadius
-    );
-  } else if (paddle.side === "right") {
-    ctx.moveTo(paddle.paddleX, paddle.paddleY);
-    ctx.arcTo(
-      paddle.paddleX,
-      paddle.paddleY + paddle.paddleHeight,
       paddle.paddleX + paddle.paddleWidth,
       paddle.paddleY + paddle.paddleHeight,
-      0
+      roundedCornerRadius //-12
+    );
+    ctx.lineTo(paddle.paddleX + paddle.paddleWidth, paddle.paddleY + paddle.paddleHeight);
+    ctx.lineTo(paddle.paddleX + paddle.paddleWidth, paddle.paddleY);
+    ctx.arcTo(
+      paddle.paddleX + paddle.paddleWidth,
+      paddle.paddleY,
+      paddle.paddleX + roundedCornerRadius,
+      paddle.paddleY,
+      roundedCornerRadius
+    );
+  }
+  if (paddle.side === "right") {
+    const roundedCornerRadius = paddle.paddleRadius;
+    const flatSideWidth = paddle.paddleWidth - roundedCornerRadius;
+    ctx.moveTo(paddle.paddleX + flatSideWidth, paddle.paddleY);
+    ctx.arcTo(
+      paddle.paddleX + paddle.paddleWidth,
+      paddle.paddleY,
+      paddle.paddleX + paddle.paddleWidth,
+      paddle.paddleY + paddle.paddleHeight,
+      roundedCornerRadius //- 12
     );
     ctx.arcTo(
       paddle.paddleX + paddle.paddleWidth,
       paddle.paddleY + paddle.paddleHeight,
-      paddle.paddleX + paddle.paddleWidth,
-      paddle.paddleY,
-      paddle.paddleRadius
+      paddle.paddleX,
+      paddle.paddleY + paddle.paddleHeight,
+      roundedCornerRadius //-12
     );
+    ctx.lineTo(paddle.paddleX, paddle.paddleY + paddle.paddleHeight);
+    ctx.lineTo(paddle.paddleX, paddle.paddleY);
     ctx.arcTo(
-      paddle.paddleX + paddle.paddleWidth,
-      paddle.paddleY,
       paddle.paddleX,
       paddle.paddleY,
-      paddle.paddleRadius
+      paddle.paddleX + flatSideWidth,
+      paddle.paddleY,
+      roundedCornerRadius
     );
   }
   ctx.closePath();
@@ -271,19 +398,70 @@ class Paddle {
   }
 
   setPaddleVelocity = (speed) => (this.paddleVelocity = speed);
+
+  updatePositionOnResize = (canvasWidth, canvasHeight) => {
+    this.paddleHeight = canvasHeight * 0.1; // Example: paddle height is 10% of canvas height
+    this.paddleWidth = canvasWidth * 0.02; // Example: paddle width is 2% of canvas width
+  }
 }
 
-const paddleHeight = 70;
-const paddleWidth = 10;
-const margin = 20;
-const initLeftX = margin - paddleWidth / 2;
-const initRightX = canvasWidth - initLeftX - paddleWidth;
-const initY = (canvasHeight - paddleHeight) / 2;
+// const paddleHeight = 70;
+// const paddleWidth = 10;
+// const margin = 20;
+// const initLeftX = margin - paddleWidth / 2;
+// const initRightX = canvasWidth - initLeftX - paddleWidth;
+// const initY = (canvasHeight - paddleHeight) / 2;
+
+// const paddleOptions = {
+//   width: paddleWidth,
+//   height: paddleHeight,
+//   radius: 15,
+//   velocity: 50,
+//   color: "tomato",
+// };
+
+// const paddleHeight = 0.0005 * canvasHeight;//0.2;////0.0003 * canvasHeight; // 20% of canvas height
+// const paddleWidth = 0.00005 * canvasWidth;//0.012; // 2% of canvas width
+// const margin = 0.02; // 5% of canvas width for the margin
+
+// const initLeftX = margin * canvasWidth - paddleWidth * canvasWidth / 2;
+// const initRightX = canvasWidth - initLeftX - (paddleWidth * canvasWidth);
+// const initY = (canvasHeight - (paddleHeight * canvasHeight)) / 2;
+
+const paddleHeight = 0.22;//0.2;////0.0003 * canvasHeight; // 20% of canvas height
+const paddleWidth = 0.012;//0.012; // 2% of canvas width
+const margin = 0.024; // 5% of canvas width for the margin
+
+// if (canvasWidth > canvasHeight) {
+//   let initLeftX = margin * canvasWidth;
+//   let initRightX = canvasWidth - initLeftX - paddleWidth * canvasWidth;
+//   let initY = (canvasHeight - paddleHeight * canvasHeight) / 2;
+// } else if (canvasWidth < canvasHeight) {
+  
+// }
+
+let initLeftX;
+let initRightX;
+let initY;
+
+if (canvasWidth > canvasHeight)
+{
+  initLeftX = margin * canvasWidth;
+  initRightX = canvasWidth - initLeftX - paddleWidth * canvasWidth;
+  initY = (canvasHeight - paddleHeight * canvasHeight) / 2;
+}
+else{
+  initLeftX = margin * canvasHeight;
+  initRightX = canvasHeight - initLeftX - paddleWidth * canvasHeight;
+  initY = canvasWidth / 2 - ((paddleHeight * canvasHeight) / 2);
+}
+
+
 
 const paddleOptions = {
-  width: paddleWidth,
-  height: paddleHeight,
-  radius: 15,
+  width: paddleWidth * canvasWidth,
+  height: paddleHeight * canvasHeight,
+  radius: canvasWidth * 0.012, //0.0375 3.75% of canvas width for the radius
   velocity: 50,
   color: "tomato",
 };
@@ -292,9 +470,9 @@ const paddleLeft = new Paddle(initLeftX, initY, "left", paddleOptions);
 const paddleRight = new Paddle(initRightX, initY, "right", paddleOptions);
 
 const ballOptions = {
-  x: canvasWidth / 2,
+  radius:0.019 * ((canvasWidth + canvasHeight) / 2), // 1% of canvas width for the radius
+  x: canvasWidth / 2 ,
   y: canvasHeight / 2,
-  radius: 10,
   dx: Math.random() < 0.5 ? -5 : 5,
   dy: 5,
   color: "red",
@@ -305,8 +483,8 @@ const ball = new Ball(ballOptions);
 
 const paddles = [paddleLeft, paddleRight];
 scoreBoard = (paddles) => {
-  paddleL = paddles[0];
-  paddleR = paddles[1];
+  const paddleL = paddles[0];
+  const paddleR = paddles[1];
   ctx.font = "30px Arial";
   ctx.fillStyle = "black";
   ctx.fillText(paddleL.score, canvasWidth / 2 - 100, canvasHeight / 2);
@@ -325,19 +503,34 @@ function draw() {
 function drawDashedCenterLine() {
   ctx.setLineDash([8, 10]); // [lineLength, spaceLength]
   ctx.strokeStyle = "grey";
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 0.004 * canvasWidth;//4;
   ctx.beginPath();
-  ctx.moveTo(canvasWidth / 2, 0);
-  ctx.lineTo(canvasWidth / 2, canvasHeight);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "red";
-  ctx.moveTo(canvasWidth / 3, 0);
-  ctx.lineTo(canvasWidth / 3, canvasHeight);
-  ctx.moveTo((2 * canvasWidth) / 3, 0);
-  ctx.lineTo((2 * canvasWidth) / 3, canvasHeight);
-  ctx.stroke();
+  if (canvasWidth > canvasHeight) {
+    ctx.moveTo((canvasWidth / 2) , 0);
+    ctx.lineTo((canvasWidth / 2) , canvasHeight);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "red";
+    ctx.moveTo(canvasWidth / 3, 0);
+    ctx.lineTo(canvasWidth / 3, canvasHeight);
+    ctx.moveTo((2 * canvasWidth) / 3, 0);
+    ctx.lineTo((2 * canvasWidth) / 3, canvasHeight);
+    ctx.stroke();
+  }
+  else {
+    ctx.moveTo(0, (canvasHeight / 2));
+    ctx.lineTo(canvasWidth, (canvasHeight / 2));
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "red";
+    ctx.moveTo(0, canvasHeight / 3);
+    ctx.lineTo(canvasWidth, canvasHeight / 3);
+    ctx.moveTo(0, (2 * canvasHeight) / 3);
+    ctx.lineTo(canvasWidth, (2 * canvasHeight) / 3);
+    ctx.stroke();
+  }
 }
 
 function keyDownHandler(event) {
@@ -359,3 +552,29 @@ function updateCanvas() {
 
 document.addEventListener("keydown", keyDownHandler, false);
 updateCanvas();
+
+// window.addEventListener("mousemove", (event) => {
+//   // console.log(event);
+//   let relativeY = event.clientY - theCanvas.offsetTop;
+//   let relativeX = event.clientX - theCanvas.offsetLeft;
+//   if (relativeY > 0 && relativeY < canvasHeight) {
+//     if (relativeX > canvasWidth / 2)
+//       paddleRight.paddleY = relativeY - paddleRight.paddleHeight / 2;
+//     else
+//     paddleLeft.paddleY = relativeY - paddleLeft.paddleHeight / 2;
+//   }
+// });
+
+window.addEventListener('resize', handleResize);
+
+
+function handleResize() {
+console.log(window.innerWidth + " " + window.innerHeight)
+  ctx.clearRect(0, 0, window.width, window.height);
+  // canvasWidth = 400;
+  // canvasHeight = 400;
+
+  // paddleLeft.updatePositionOnResize(canvasWidth, canvasHeight);
+  // paddleRight.updatePositionOnResize(canvasWidth, canvasHeight);
+  // ball.updatePositionOnResize(canvasWidth, canvasHeight);
+}
