@@ -31,29 +31,19 @@ function paddleBallCollision(paddles, ball) {
 
   if (landscapeModeView) {
     if (bX < canvasWidth / 2) {
-      // alert("left paddle");
       // Ball collided with the left paddle
       const paddleCenterY = plY + pdlLeft.paddleHeight / 2;
       const relativeY = bY - paddleCenterY;
       const normalizedY = relativeY / (pdlLeft.paddleHeight / 2);
-      // angle = Math.floor(normalizedY );
-      // angle = (angle * Math.PI) / 4;
       angle = normalizedY * maxAngle;
-
-      // alert("ply: " + plY +  " bY: " + bY + " paddleCenterY: " + paddleCenterY + " relativeY: " + relativeY + " normalizedY: " + normalizedY + " canvaH/2 " + canvasHeight / 2);
     } else if (bX > canvasWidth / 2) {
       // Ball collided with the right paddle
-      // ball.xVelocity = -ball.xVelocity;
       const paddleCenterY = prY + pdlRight.paddleHeight / 2;
       const relativeY = bY - paddleCenterY;
       const normalizedY = relativeY / (pdlRight.paddleHeight / 2);
-      // angle = Math.floor(normalizedY);
-      // angle = (angle * Math.PI) / 4;
       angle = normalizedY * maxAngle;
 
-      // console.log("angle: " + angle);
-      // alert("ply: " + plY +  " bY: " + bY + " paddleCenterY: " + paddleCenterY + " relativeY: " + relativeY + " normalizedY: " + normalizedY + " canvaH/2 " + canvasHeight / 2);
-    }
+        }
   }
   // return;
   bX = ball.ballX * canvasWidth;
@@ -70,34 +60,14 @@ function paddleBallCollision(paddles, ball) {
       const relativeY = bX - paddleCenterY;
       const normalizedY = relativeY / (pdlLeft.paddleHeight / 2);
       angle = normalizedY * maxAngle;
-      // alert("ply: " + plY +  " bX: " + bX + " paddleCenterY: " + paddleCenterY + " relativeY: " + relativeY + " normalizedY: " + normalizedY + " canvaH/2 " + canvasHeight / 2);
     } else if (bY > canvasHeight / 2) {
       // Ball collided with the Bottom paddle
       const paddleCenterY = prY + pdlRight.paddleHeight / 2;
       const relativeY = bX - paddleCenterY;
       const normalizedY = relativeY / (pdlRight.paddleHeight / 2);
       angle = normalizedY * maxAngle;
-      // alert("pry: " + prY +  " bX: " + bX + " paddleCenterY: " + paddleCenterY + " relativeY: " + relativeY + " normalizedY: " + normalizedY + " canvaW/2 " + canvasWidth / 1);
     }
   }
-  console.log("canvasWidth: " + canvasWidth + " canvasHeight: " + canvasHeight);
-  // ballVelocity = (landscapeModeView) ? canvasWidth * 0.000009 : canvasHeight * 0.000015;
-  // ballVelocity = (landscapeModeView) ? canvasWidth * 0.000009 : canvasHeight * 0.000015;
-  // let ballVelocity;
-  // if (landscapeModeView) {
-  //   if (canvasWidth >= 1200 || canvasHeight >= 1200)
-  //     ballVelocity = canvasWidth * 0.000014;
-  //   else if (canvasWidth <= 500 || canvasHeight <= 500)
-  //     ballVelocity = canvasWidth * 0.00003;
-  //   else 
-  //   {
-  //     ballVelocity = canvasWidth * 0.000018; // canvasWidth: 2287 canvasHeight: 442
-  //   }
-  // } else {
-  //   ballVelocity = canvasHeight * 0.000015;
-  // }
-
-  // ballVelocity =1// (landscapeModeView) ? canvasWidth * 0.013 : canvasHeight * 0.016; 
 
   ballVelocity = (landscapeModeView) ? 0.015 : 0.016;
 
@@ -113,7 +83,6 @@ function paddleBallCollision(paddles, ball) {
       ball.ballY * canvasHeight < canvasHeight / 2
         ? ballVelocity * Math.cos(angle)
         : -ballVelocity * Math.cos(angle);
-    // alert(ball.xVelocity + " " + ball.yVelocity)
   }
 
   ball.color = randomColor();
@@ -184,8 +153,6 @@ function getRandomVelocity() {
 function ballTopBottomCollision(ball) {
   if ((ball.ballY * canvasHeight) + ball.radius + (ball.yVelocity * canvasHeight) > canvasHeight || (ball.ballY * canvasHeight) - ball.radius < 0) 
   {
-    // if (ball.ballX - ball.radius >= canvasWidth / 2 - 3 && ball.ballX <= canvasWidth / 2 + 3)
-    //   ball.ballX += ball.ballX > canvasWidth / 2 ? -5 : 7;
       ball.yVelocity = -ball.yVelocity;
   }
 }
@@ -197,18 +164,6 @@ function ballRightLeftCollision(ball) {
 
 
 resetGame = (ball) => {
-  // ball.ballX = 0.5;
-  // ball.ballY = 0.5;
-
-
-    //   const minY = 0;
-    // const maxY = 1;
-    // const randomY = Math.random() * (maxY - minY) + minY;
-
-    // const { xV, yV } = getRandomVelocity();
-    // alert("minY: " + minY + " maxY: " + maxY + " randomY: " + randomY + " xV: " + xV + " yV: " + yV);
-
-
   if (landscapeModeView) 
   {
     const minY = 0.2;
@@ -269,11 +224,6 @@ class Ball {
     // // Paddle-Ball collision
     if (ballPaddleFaceCollision(this, this.paddles)) 
     {
-      // if (landscapeModeView)
-      //   this.xVelocity = -this.xVelocity;
-      // else
-      //   this.yVelocity = -this.yVelocity;
-
       paddleBallCollision(this.paddles, this);
     }
     else if (isBallWithinPaddleRangeX(this, this.paddles)) 
@@ -366,139 +316,6 @@ function drawPaddle(paddle) {
 
   }
 
-//   if (portraitModeView) 
-//   {
-//     if (paddle.side === "left") {
-//       const newY = paddle.paddleY * canvasWidth;
-//       const roundedCornerRadius = paddle.paddleRadius;
-//       ctx.moveTo(newY, paddle.paddleX + roundedCornerRadius);
-//       ctx.arcTo(
-//         newY,
-//         paddle.paddleX,
-//         newY + paddle.paddleHeight,
-//         paddle.paddleX,
-//         roundedCornerRadius 
-//       );
-//       ctx.arcTo(
-//         newY + paddle.paddleHeight,
-//         paddle.paddleX,
-//         newY + paddle.paddleHeight,
-//         paddle.paddleX + paddle.paddleWidth,
-//         roundedCornerRadius 
-//       );
-//       ctx.lineTo(
-//         newY,
-//         paddle.paddleX + paddle.paddleWidth
-//       );
-//       ctx.lineTo(newY, paddle.paddleX);
-//       ctx.arcTo(
-//         newY,
-//         paddle.paddleX ,
-//         newY,
-//         paddle.paddleX + roundedCornerRadius,
-//         roundedCornerRadius
-//       );
-//     }
-
-//     if (paddle.side === "right") {
-//       const newY = paddle.paddleY * canvasWidth;
-//       const roundedCornerRadius = paddle.paddleRadius;
-//       const flatSideWidth = paddle.paddleWidth - roundedCornerRadius;
-//       ctx.moveTo(newY, paddle.paddleX + flatSideWidth);
-//       ctx.arcTo(
-//         newY,
-//         paddle.paddleX + paddle.paddleWidth,
-//         newY + paddle.paddleHeight,
-//         paddle.paddleX + paddle.paddleWidth,
-//         roundedCornerRadius 
-//       );
-//       ctx.arcTo(
-//         newY + paddle.paddleHeight,
-//         paddle.paddleX + paddle.paddleWidth,
-//         newY + paddle.paddleHeight,
-//         paddle.paddleX,
-//         roundedCornerRadius 
-//       );
-//       ctx.lineTo(newY + paddle.paddleHeight, paddle.paddleX);
-//       ctx.lineTo(newY, paddle.paddleX);
-//       ctx.arcTo(
-//         newY,
-//         paddle.paddleX,
-//         newY,
-//         paddle.paddleX + flatSideWidth,
-//         roundedCornerRadius
-//       );
-//     }
-
-//     ctx.closePath();
-//     ctx.fill();
-//     return;
-//   }
-
-//   /*
-//    ***** Left Right Paddle *****
-//    */
-
-//   if (paddle.side === "left") {
-//     // console.log(paddle);
-//     const roundedCornerRadius = paddle.paddleRadius;
-//     ctx.moveTo(paddle.paddleX + roundedCornerRadius, paddle.paddleY);
-//     ctx.arcTo(
-//       paddle.paddleX,
-//       paddle.paddleY,
-//       paddle.paddleX,
-//       paddle.paddleY + paddle.paddleHeight,
-//       roundedCornerRadius
-//     );
-//     ctx.arcTo(
-//       paddle.paddleX,
-//       paddle.paddleY + paddle.paddleHeight,
-//       paddle.paddleX + paddle.paddleWidth,
-//       paddle.paddleY + paddle.paddleHeight,
-//       roundedCornerRadius
-//     );
-//     ctx.lineTo(
-//       paddle.paddleX + paddle.paddleWidth,
-//       paddle.paddleY + paddle.paddleHeight
-//     );
-//     ctx.lineTo(paddle.paddleX + paddle.paddleWidth, paddle.paddleY);
-//     ctx.arcTo(
-//       paddle.paddleX + paddle.paddleWidth,
-//       paddle.paddleY,
-//       paddle.paddleX + roundedCornerRadius,
-//       paddle.paddleY,
-//       roundedCornerRadius
-//     );
-//   }
-//   if (paddle.side === "right") {
-
-//     const roundedCornerRadius = paddle.paddleRadius;
-//     const flatSideWidth = paddle.paddleWidth - roundedCornerRadius;
-//     ctx.moveTo(paddle.paddleX + flatSideWidth, paddle.paddleY);
-//     ctx.arcTo(
-//       paddle.paddleX + paddle.paddleWidth,
-//       paddle.paddleY,
-//       paddle.paddleX + paddle.paddleWidth,
-//       paddle.paddleY + paddle.paddleHeight,
-//       roundedCornerRadius
-//     );
-//     ctx.arcTo(
-//       paddle.paddleX + paddle.paddleWidth,
-//       paddle.paddleY + paddle.paddleHeight,
-//       paddle.paddleX,
-//       paddle.paddleY + paddle.paddleHeight,
-//       roundedCornerRadius
-//     );
-//     ctx.lineTo(paddle.paddleX, paddle.paddleY + paddle.paddleHeight);
-//     ctx.lineTo(paddle.paddleX, paddle.paddleY);
-//     ctx.arcTo(
-//       paddle.paddleX,
-//       paddle.paddleY,
-//       paddle.paddleX + flatSideWidth,
-//       paddle.paddleY,
-//       roundedCornerRadius
-//     );
-//   }
   ctx.closePath();
   ctx.fill();
 }
@@ -519,31 +336,20 @@ class Paddle {
   updateScore = () => (this.score += 1);
 
   movePaddleUp() {
-    const paddleVelocity = landscapeModeView
-      ? canvasHeight * 0.15
-      : canvasHeight * 0.15;
-    // this.paddleY =
-    //   this.paddleY - paddleVelocity < 0 ? 0 : this.paddleY - paddleVelocity;
+    // const paddleVelocity = landscapeModeView
+    //   ? canvasHeight * 0.15
+    //   : canvasHeight * 0.15;
     this.paddleY = this.paddleY - 0.05 < 0 ? 0 : this.paddleY - 0.05;
   }
 
   movePaddleDown() {
-    const paddleVelocity = landscapeModeView
-      ? canvasHeight * 0.15
-      : canvasHeight * 0.15;
-    // if (landscapeModeView) {
-      // this.paddleY =
-      //   this.paddleY + this.paddleHeight + paddleVelocity > canvasHeight
-      //     ? canvasHeight - this.paddleHeight
-      //     : this.paddleY + paddleVelocity;
-    // } else {
-      // this.paddleY =
-      //   this.paddleY + this.paddleHeight + paddleVelocity > canvasWidth
-      //     ? canvasWidth - this.paddleHeight
-      //     : this.paddleY + paddleVelocity;
+    // const paddleVelocity = landscapeModeView
+    //   ? canvasHeight * 0.15
+    //   : canvasHeight * 0.15;
+
       this.paddleY =
         this.paddleY  + 0.05 > 0.85 ? 0.85 : this.paddleY + 0.05; 
-    // }
+
   }
 
   initializeGameState() { 
@@ -574,8 +380,6 @@ class Paddle {
 
       this.paddleX = this.side === "left" ? 0.015 : 0.97;
       this.paddleY = 0.425; // 0.835
-        
-
     }
 
   }
@@ -593,13 +397,11 @@ class Paddle {
       this.margin = 0.024;
       this.paddleRadius = canvasWidth * 0.01;
     }
-
   }
 }
 
 const paddleLeft = new Paddle(0, 0, "left");
 const paddleRight = new Paddle(0, 0, "right");
-
 
 const ballOptions = {
   radius: 0.019 * ((canvasWidth + canvasHeight) / 2),
