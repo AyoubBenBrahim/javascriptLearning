@@ -26,12 +26,15 @@ function paddleBallCollision(paddles, ball) {
     const relativeY = ball.ballY - paddleCenterY;
     const normalizedY = relativeY / (pdlLeft.paddleHeight / 2);
     angle = normalizedY * maxAngle;
+    // alert("ballY: " + ball.ballY + " paddleCenterY: " + paddleCenterY + " relativeY: " + relativeY + " normalizedY: " + normalizedY);
   } else if (landscapeModeView && ball.ballX > canvasWidth / 2) {
     // Ball collided with the right paddle
     const paddleCenterY = pdlRight.paddleY + pdlRight.paddleHeight / 2;
     const relativeY = ball.ballY - paddleCenterY;
     const normalizedY = relativeY / (pdlRight.paddleHeight / 2);
     angle = normalizedY * maxAngle;
+    console.log("normalizedY: " + normalizedY);
+    console.log("angle: " + angle);
   }
 
   if (portraitModeView && ball.ballY < canvasHeight / 2) {
@@ -40,15 +43,17 @@ function paddleBallCollision(paddles, ball) {
     const relativeY = ball.ballX - paddleCenterY;
     const normalizedY = relativeY / (pdlLeft.paddleHeight / 2);
     angle = normalizedY * maxAngle;
+    
   } else if (portraitModeView && ball.ballY > canvasHeight / 2) {
     // Ball collided with the Bottom paddle
     const paddleCenterY = pdlRight.paddleY + pdlRight.paddleHeight / 2;
     const relativeY = ball.ballX - paddleCenterY;
     const normalizedY = relativeY / (pdlRight.paddleHeight / 2);
     angle = normalizedY * maxAngle;
+    // alert("pry: " + pdlRight.paddleY +  " bX: " + ball.ballX + " paddleCenterY: " + paddleCenterY + " relativeY: " + relativeY + " normalizedY: " + normalizedY + " canvaW/2 " + canvasWidth / 2);
   }
 
-  ballVelocity = (landscapeModeView) ? canvasWidth * 0.013 : canvasHeight * 0.016; 
+  ballVelocity =1// (landscapeModeView) ? canvasWidth * 0.013 : canvasHeight * 0.016; 
 
   if (landscapeModeView) {
     ball.xVelocity =
@@ -59,9 +64,10 @@ function paddleBallCollision(paddles, ball) {
   } else {
     ball.xVelocity = ballVelocity * Math.sin(angle);
     ball.yVelocity =
-      ball.ballY < canvasHeight / 2
-        ? ballVelocity * Math.cos(angle)
-        : -ballVelocity * Math.cos(angle);
+    ball.ballY < canvasHeight / 2
+    ? ballVelocity * Math.cos(angle)
+    : -ballVelocity * Math.cos(angle);
+    // alert(ball.xVelocity + " " + ball.yVelocity)
   }
 
   // const adjustedPaddleVelocity = ballVelocity * 5;
@@ -79,6 +85,8 @@ isBallWithinPaddleRangeX = (ball, paddles) => {
   if (landscapeModeView) {
     const left = ball.ballX - ball.radius <= paddles[0].paddleX + paddles[0].paddleWidth;
     const right = ball.ballX + ball.radius >= paddles[1].paddleX;
+    // if (left || right)
+    //   alert("coliision ball.radius = "  + ball.radius);
     return left || right;
   }
 
@@ -220,7 +228,7 @@ class Ball {
     }
 
     this.ballX += this.xVelocity;
-    this.ballY += this.yVelocity;
+    // this.ballY += this.yVelocity;
 
     this.draw();
   }
