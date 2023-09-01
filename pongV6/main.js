@@ -733,16 +733,16 @@ paddleRight.updateGameStateUponResize();
 
 
 
-function pauseGame() {
-  cancelAnimationFrame(animationFrameId);
-}
+// function pauseGame() {
+//   cancelAnimationFrame(animationFrameId);
+// }
 
-function resumeGame() {
-  animationFrameId = requestAnimationFrame(updateCanvas);
-}
+// function resumeGame() {
+//   animationFrameId = requestAnimationFrame(updateCanvas);
+// }
 
-// Pause the game
-pauseGame();
+// // Pause the game
+// pauseGame();
 
-// Resume the game
-resumeGame();
+// // Resume the game
+// resumeGame();
