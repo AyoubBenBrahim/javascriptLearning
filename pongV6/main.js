@@ -18,7 +18,7 @@ const randomColor = () => {
 function paddleBallCollision(paddles, ball) {
   let pdlLeft = paddles[0];
   let pdlRight = paddles[1];
-  let angle = 0;
+  let reflectionAngle = 0;
 
   let bX = ball.ballX * canvasWidth;
   let bY = ball.ballY * canvasHeight;
@@ -35,13 +35,13 @@ function paddleBallCollision(paddles, ball) {
       const paddleCenterY = plY + pdlLeft.paddleHeight / 2;
       const relativeY = bY - paddleCenterY;
       const normalizedY = relativeY / (pdlLeft.paddleHeight / 2);
-      angle = normalizedY * maxAngle;
+      reflectionAngle = normalizedY * maxAngle;
     } else if (bX > canvasWidth / 2) {
       // Ball collided with the right paddle
       const paddleCenterY = prY + pdlRight.paddleHeight / 2;
       const relativeY = bY - paddleCenterY;
       const normalizedY = relativeY / (pdlRight.paddleHeight / 2);
-      angle = normalizedY * maxAngle;
+      reflectionAngle = normalizedY * maxAngle;
 
         }
   }
@@ -59,13 +59,13 @@ function paddleBallCollision(paddles, ball) {
       const paddleCenterY = plY + pdlLeft.paddleHeight / 2;
       const relativeY = bX - paddleCenterY;
       const normalizedY = relativeY / (pdlLeft.paddleHeight / 2);
-      angle = normalizedY * maxAngle;
+      reflectionAngle = normalizedY * maxAngle;
     } else if (bY > canvasHeight / 2) {
       // Ball collided with the Bottom paddle
       const paddleCenterY = prY + pdlRight.paddleHeight / 2;
       const relativeY = bX - paddleCenterY;
       const normalizedY = relativeY / (pdlRight.paddleHeight / 2);
-      angle = normalizedY * maxAngle;
+      reflectionAngle = normalizedY * maxAngle;
     }
   }
 
@@ -74,15 +74,15 @@ function paddleBallCollision(paddles, ball) {
   if (landscapeModeView) {
     ball.xVelocity =
       ball.ballX * canvasWidth < canvasWidth / 2
-        ? ballVelocity * Math.cos(angle)
-        : -ballVelocity * Math.cos(angle);
-    ball.yVelocity = ballVelocity * Math.sin(angle);
+        ? ballVelocity * Math.cos(reflectionAngle)
+        : -ballVelocity * Math.cos(reflectionAngle);
+    ball.yVelocity = ballVelocity * Math.sin(reflectionAngle);
   } else {
-    ball.xVelocity = ballVelocity * Math.sin(angle);
+    ball.xVelocity = ballVelocity * Math.sin(reflectionAngle);
     ball.yVelocity =
       ball.ballY * canvasHeight < canvasHeight / 2
-        ? ballVelocity * Math.cos(angle)
-        : -ballVelocity * Math.cos(angle);
+        ? ballVelocity * Math.cos(reflectionAngle)
+        : -ballVelocity * Math.cos(reflectionAngle);
   }
 
   ball.color = randomColor();
